@@ -59,5 +59,7 @@ $(function() {
 	<br /><br /><br />
 	<p>인증번호입력</p>
 	<input type="text" id="inputCertifiedNumber" placeholder="인증번호입력" /> <button type="button" id="checkBtn">확인</button>
+	
+	<a href="./naver">네이버로 로그인하기</a>
 </body>
 </html>

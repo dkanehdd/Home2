@@ -1,4 +1,4 @@
-package com.kosmo.home;
+package mms;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -9,55 +9,17 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Random;
 
-import javax.servlet.http.HttpServletRequest;
-
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
-import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 
-import mms.MemberDTO;
-import mms.certificationService;
 
-@Controller
-public class Example {
+public class ApiExamMemberProfile {
 
-	@RequestMapping("/check/sendSMS")
-	@ResponseBody  
-	public String sendSMS(HttpServletRequest req) {
-		
-		String phoneNumber = req.getParameter("phoneNumber");
-        Random rand  = new Random();
-        String numStr = "";
-        for(int i=0; i<4; i++) {
-            String ran = Integer.toString(rand.nextInt(10));
-            numStr+=ran;
-        }
-
-        System.out.println("수신자 번호 : " + phoneNumber);
-        System.out.println("인증번호 : " + numStr);
-        certificationService.certifiedPhoneNumber(phoneNumber,numStr);
-        return numStr;
-    }
-	@RequestMapping("/naver")
-	public String Naver() {
-		
-		return "naver";
-	}
-	@RequestMapping("/callback")
-	public String callback() {
-		return "callback";
-	}
-	
-	@RequestMapping("/callbackAction")
-	public String Navercallback(HttpServletRequest req, Model model) {
-		String token = req.getParameter("token");
-		
+	public static void main(String[] args) {
+		String token = "AAAAOb66K8XiR-g_rxAHJBfHvLI0pQ7JuMM_KtURqIcfXxKzpa4GVXUhWCtDx5JhMOp2Dm2Ux6UN0Je-3DuGJjvQtKg"; // 네이버 로그인 접근 토큰;
 		String header = "Bearer " + token; // Bearer 다음에 공백 추가
 
 		String apiURL = "https://openapi.naver.com/v1/nid/me";
@@ -65,9 +27,8 @@ public class Example {
 		Map<String, String> requestHeaders = new HashMap();
 		requestHeaders.put("Authorization", header);
 		String responseBody = get(apiURL, requestHeaders);
-		MemberDTO dto = new MemberDTO();
+
 		System.out.println(responseBody);
-		String image = "";
 		try {
 			JSONParser jsonParse = new JSONParser();
 			JSONObject jsonObj = (JSONObject) jsonParse.parse(responseBody);
@@ -78,23 +39,14 @@ public class Example {
 			System.out.println(personObject.get("gender").toString().equals("M")?"남":"여"); 
 			System.out.println(personObject.get("name")); 
 			System.out.println(personObject.get("birthday")); 
-			dto.setId(personObject.get("id").toString());
-			dto.setEmail(personObject.get("email").toString());
-			dto.setPhone(personObject.get("mobile").toString().replace("-", ""));
-			dto.setGender(personObject.get("gender").toString().equals("M")?"남":"여");
-			dto.setName(personObject.get("name").toString());
-			dto.setBirthday(personObject.get("birthday").toString());
-			image = personObject.get("profile_image").toString();
+			
 		}
 		catch (ParseException e) {
 			e.printStackTrace();
 		}
-		model.addAttribute("dto", dto);
-		model.addAttribute("image", image);
-		return "result";
+
 	}
-	
-	
+
 	private static String get(String apiUrl, Map<String, String> requestHeaders) {
 		HttpURLConnection con = connect(apiUrl);
 		try {
